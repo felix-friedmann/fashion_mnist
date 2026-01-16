@@ -4,6 +4,7 @@ from torch import nn, optim
 from src.config import *
 from src.validation import evaluate_model
 from src.utils import plot_training_curves
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def train_model(model, train_loader, test_loader, device, output_dir, plot=False):
     """
@@ -19,7 +20,8 @@ def train_model(model, train_loader, test_loader, device, output_dir, plot=False
     logger = logging.getLogger(__name__)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, min_lr=1e-6)
 
     train_losses, val_losses, val_accuracies = [], [], []
 
@@ -56,7 +58,13 @@ def train_model(model, train_loader, test_loader, device, output_dir, plot=False
         val_losses.append(val_loss)
         val_accuracies.append(val_acc)
 
-        # overfitting check
+        old_lr = optimizer.param_groups[0]['lr']
+        scheduler.step(val_loss)
+        new_lr = optimizer.param_groups[0]['lr']
+
+        if old_lr != new_lr:
+            logger.info(f"New learning rate: {old_lr} -> {new_lr}")
+
         logger.info(f"Epoch {epoch + 1}/{NUM_EPOCHS} Summary: Train Loss={avg_train_loss:.4f}, Val Loss={val_loss:.4f}, Val Acc={val_acc:.2f}%")
 
     if plot:
