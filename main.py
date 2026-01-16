@@ -6,8 +6,7 @@ import src.cnn as cnn
 from src.config import *
 from torch.utils.data import DataLoader
 from src.train import train_model
-from src.evaluate import evaluate_model
-from datetime import datetime
+from src.validation import evaluate_model
 import os
 
 def main():
@@ -16,6 +15,7 @@ def main():
     parser.add_argument('--log-level', type=str, default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'], help='Choose the minimum logging level to be displayed.')
     parser.add_argument('--conf', action='store_true', help='Prints confusion matrix.')
     parser.add_argument('--train-acc', action='store_true', help='Prints training accuracy.')
+    parser.add_argument('--plot-training', action='store_true', help='Plots training data.')
     args = parser.parse_args()
 
     # logging
@@ -39,13 +39,12 @@ def main():
     # create conf matrix directory
     output_dir = None
     if args.conf:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_dir = f"conf_matrix/conf_matrix_{timestamp}"
+        output_dir = f"conf_matrix/conf_matrix_{TIME}"
         os.makedirs(output_dir, exist_ok=True)
 
     # train model
     logger.info("Training model...")
-    train_model(model, train_loader, test_loader, device, output_dir)
+    train_model(model, train_loader, test_loader, device, output_dir, args.plot_training)
 
     logger.info("Evaluating model...")
 
