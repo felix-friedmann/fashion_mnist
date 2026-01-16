@@ -2,7 +2,6 @@ import argparse
 import torch
 import logging
 import torchvision.datasets as datasets
-import torchvision.transforms as transforms
 import src.cnn as cnn
 from src.config import *
 from torch.utils.data import DataLoader
@@ -29,7 +28,7 @@ def main():
         torch.cuda.manual_seed(SEED)
 
     # fetch data
-    logger.info("Fetching Fashion MNIST data from Pytorch datasets...")
+    logger.info("Fetching and augmenting Fashion MNIST data from Pytorch datasets...")
     train_dataset, train_loader, test_dataset, test_loader = load_data()
 
     # get device and model

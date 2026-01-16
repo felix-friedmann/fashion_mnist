@@ -1,3 +1,4 @@
+import torchvision.transforms as transforms
 
 BATCH_SIZE: int = 64
 
@@ -21,3 +22,15 @@ CLASSES: list[str] = ['T-shirt/top',
                      'Sneaker',
                      'Bag',
                      'Ankle boot']
+
+CONFUSED_CLASSES: list[int] = [0, 2, 4, 6]
+
+BASE_TRANSFORM = transforms.Compose([
+    transforms.ToTensor()
+])
+
+STRONG_TRANSFORM = transforms.Compose([
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
+    transforms.ToTensor(),
+    transforms.RandomErasing(p=0.3, scale=(0.02, 0.1))
+])
