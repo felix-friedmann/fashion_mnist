@@ -6,15 +6,17 @@ import torchvision.transforms as transforms
 import src.cnn as cnn
 from src.config import *
 from torch.utils.data import DataLoader
-from src.eda import run_eda
 from src.train import train_model
 from src.evaluate import evaluate_model
+from datetime import datetime
+import os
 
 def main():
     # parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('--eda', action='store_true', help='Runs minimal exploratory data analysis.')
     parser.add_argument('--log-level', type=str, default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'], help='Choose the minimum logging level to be displayed.')
+    parser.add_argument('--conf', action='store_true', help='Prints confusion matrix.')
+    parser.add_argument('--train-acc', action='store_true', help='Prints training accuracy.')
     args = parser.parse_args()
 
     # logging
@@ -30,23 +32,30 @@ def main():
     logger.info("Fetching Fashion MNIST data from Pytorch datasets...")
     train_dataset, train_loader, test_dataset, test_loader = load_data()
 
-    # run minimal eda (needed?)
-    if args.eda:
-        logger.info("Running minimal exploratory data analysis...")
-        run_eda(train_dataset, test_dataset)
-
+    # get device and model
     device = get_device()
     logger.info(f"Fetching model to device: {device.type}")
     model = cnn.CNN().to(device)
 
+    # create conf matrix directory
+    output_dir = None
+    if args.conf:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_dir = f"conf_matrix/conf_matrix_{timestamp}"
+        os.makedirs(output_dir, exist_ok=True)
+
+    # train model
     logger.info("Training model...")
-    train_model(model, train_loader, test_loader, device)
+    train_model(model, train_loader, test_loader, device, output_dir)
 
     logger.info("Evaluating model...")
-    logger.info("Final train accuracy:")
-    evaluate_model(model, train_loader, device)
+
+    if args.train_acc:
+        logger.info("Final train accuracy:")
+        evaluate_model(model, train_loader, device, output_dir)
+
     logger.info("Final test accuracy:")
-    evaluate_model(model, test_loader, device)
+    evaluate_model(model, test_loader, device, output_dir)
 
 
 def setup_logging(level=logging.INFO):
