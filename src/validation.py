@@ -1,18 +1,18 @@
 import logging
+import os
 import torch
 from src.config import *
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def evaluate_model(model, data_loader, device, output_dir, epoch=None, criterion=None):
+def evaluate_model(model, data_loader, device, conf=False, criterion=None):
     """
     Evaluates a model on the given dataloader.
     :param model: The model to be evaluated.
     :param data_loader: The dataloader.
     :param device: The device to be used for evaluation.
-    :param output_dir: The directory to print the confusion matrix to.
-    :param epoch: The current epoch.
+    :param conf: Whether to print confusion matrix.
     :param criterion: The training criterion.
     """
 
@@ -65,7 +65,10 @@ def evaluate_model(model, data_loader, device, output_dir, epoch=None, criterion
 
     avg_val_loss = running_val_loss / num_batches if num_batches > 0 else 0.0
 
-    if output_dir is not None:
+    if conf:
+        output_dir = "conf_matrix"
+        os.makedirs(output_dir, exist_ok=True)
+
         logger.info("Plotting confusion matrix...")
         cm = confusion_matrix(all_targets, all_preds)
 
@@ -76,13 +79,8 @@ def evaluate_model(model, data_loader, device, output_dir, epoch=None, criterion
         plt.ylabel("Actual")
 
         plt.tight_layout()
-
-        if epoch is not None:
-            plt.title(f"Confusion Matrix Epoch {epoch+1}/{NUM_EPOCHS}")
-            plt.savefig(f"{output_dir}/confusion_matrix_epoch{epoch+1}.png", dpi=150)
-        else:
-            plt.title(f"Confusion Matrix Final")
-            plt.savefig(f"{output_dir}/confusion_matrix_final.png", dpi=150)
+        plt.title(f"Confusion Matrix")
+        plt.savefig(f"{output_dir}/confusion_matrix_{TIME}.png", dpi=150)
 
         plt.close()
 

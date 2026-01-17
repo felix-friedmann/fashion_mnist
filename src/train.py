@@ -6,14 +6,13 @@ from src.validation import evaluate_model
 from src.utils import plot_training_curves
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-def train_model(model, train_loader, test_loader, device, output_dir, plot=False):
+def train_model(model, train_loader, test_loader, device, plot=False):
     """
     Training the model on the training set.
     :param model: The model to be trained.
     :param train_loader: The training data loader.
     :param test_loader: The testing data loader.
     :param device: The device to run the model on.
-    :param output_dir: The directory to print the confusion matrix to.
     :param plot: Whether to plot the training curves.
     """
 
@@ -54,7 +53,7 @@ def train_model(model, train_loader, test_loader, device, output_dir, plot=False
 
         # evaluating model
         logger.info(f"Validating model of epoch {epoch + 1}/{NUM_EPOCHS}...")
-        val_loss, val_acc = evaluate_model(model, test_loader, device, output_dir, epoch, criterion)
+        val_loss, val_acc = evaluate_model(model, test_loader, device, False, criterion)
         val_losses.append(val_loss)
         val_accuracies.append(val_acc)
 
