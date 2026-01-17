@@ -1,5 +1,6 @@
 import argparse
 import torchvision.datasets as datasets
+from torchvision.datasets import FashionMNIST
 import src.cnn as cnn
 from torch.utils.data import DataLoader
 from src.train import train_model
@@ -51,7 +52,7 @@ def main():
         print_model_summary(model)
 
 
-def load_data():
+def load_data() -> tuple[FashionMNIST, DataLoader, FashionMNIST, DataLoader]:
     """
     Loads the training and testing datasets from Pytorch datasets.
     :return: The training and testing dataset.

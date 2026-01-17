@@ -1,6 +1,7 @@
 import logging
 import matplotlib.pyplot as plt
 import torch
+from src.cnn import CNN
 from src.config import *
 
 def setup_logging(level=logging.INFO):
@@ -14,7 +15,7 @@ def setup_logging(level=logging.INFO):
     )
 
 
-def get_device():
+def get_device() -> torch.device:
     """
     Returns the device to run the model on.
     :return: The gpu device or cpu if no usable gpu is available.
@@ -27,7 +28,7 @@ def get_device():
         return torch.device('cpu')
 
 
-def plot_training_curves(train_losses, val_losses, val_accuracies, output_dir):
+def plot_training_curves(train_losses: list[float], val_losses: list[float], val_accuracies: list[float], output_dir: str):
     """
     Plot training and validation curves.
     :param train_losses: Training losses.
@@ -62,7 +63,7 @@ def plot_training_curves(train_losses, val_losses, val_accuracies, output_dir):
     plt.close()
 
 
-def print_model_summary(model):
+def print_model_summary(model: CNN):
     """
     Logging model summary.
     :param model: The model.

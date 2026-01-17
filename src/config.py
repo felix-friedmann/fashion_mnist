@@ -1,7 +1,7 @@
 import torchvision.transforms as transforms
 from datetime import datetime
 
-TIME = datetime.now().strftime("%Y%m%d_%H%M%S")
+TIME: str = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 BATCH_SIZE: int = 64
 

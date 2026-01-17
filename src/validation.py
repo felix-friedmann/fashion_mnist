@@ -1,12 +1,15 @@
 import logging
 import os
 import torch
+from torch.nn import CrossEntropyLoss
+from torch.utils.data import DataLoader
+from src.cnn import CNN
 from src.config import *
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def evaluate_model(model, data_loader, device, conf=False, criterion=None):
+def evaluate_model(model: CNN, data_loader: DataLoader, device: torch.device, conf: bool=False, criterion: CrossEntropyLoss=None):
     """
     Evaluates a model on the given dataloader.
     :param model: The model to be evaluated.

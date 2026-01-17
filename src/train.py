@@ -1,12 +1,16 @@
 import logging
 import os
+
+import torch
 from torch import nn, optim
+from torch.utils.data import DataLoader
+from src.cnn import CNN
 from src.config import *
 from src.validation import evaluate_model
 from src.utils import plot_training_curves
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-def train_model(model, train_loader, test_loader, device, plot=False):
+def train_model(model: CNN, train_loader: DataLoader, test_loader: DataLoader, device: torch.device, plot: bool=False):
     """
     Training the model on the training set.
     :param model: The model to be trained.
