@@ -84,3 +84,22 @@ def print_model_summary(model: CNN):
     logger.info("Optimizer: SGD (momentum=0.9, weight_decay=1e-4)")
     logger.info("Scheduler: ReduceLROnPlateau (factor=0.5, patience=3, min_lr=1e-6)")
 
+
+def export_onnx(model: CNN):
+    """
+    Converts the given model to ONNX format.
+    :param model: The model to convert.
+    """
+
+    # deactivate dropout/batchnorm
+    model.eval()
+    device = get_device()
+    dummy_input = torch.randn(1, 1, 28, 28).to(device)
+    torch.onnx.export(
+        model,
+        dummy_input,
+        "model.onnx",
+        export_params=True,
+        input_names=['input'],
+        output_names=['output']
+    )

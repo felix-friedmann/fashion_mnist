@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--train-acc', action='store_true', help='Prints training accuracy.')
     parser.add_argument('--plot-training', action='store_true', help='Plots training data.')
     parser.add_argument('--model-summary', action='store_true', help='Prints model summary.')
+    parser.add_argument('--onnx', action='store_true', help='Exports onnx model.')
     args = parser.parse_args()
 
     # logging
@@ -50,6 +51,10 @@ def main():
 
     if args.model_summary:
         print_model_summary(model)
+
+    if args.onnx:
+        logger.info("Exporting onnx model...")
+        export_onnx(model)
 
 
 def load_data() -> tuple[FashionMNIST, DataLoader, FashionMNIST, DataLoader]:
