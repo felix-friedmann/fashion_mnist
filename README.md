@@ -54,7 +54,60 @@ While the footwear is classified with high confidence, shirts overlap with class
 | 15 | CNN-mid   | None                                                                   | 0.001 + schedule | 25     | 98.01%    | 92.72%   | dropped batch size to 32, bigger overfit                          |
 | 16 | CNN-mid   | None                                                                   | 0.001 + schedule | 30     | 96.81%    | 92.74%   | small dropout changes, batch back to 64, less overfit than Nr. 14 |
 
-## Key Learnings
-
-
 ## Installation and Usage
+
+This project requires **Python >= 3.9.6**. Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/felix-friedmann/fashion_mnist.git
+cd fashion_mnist
+
+# Optional: use a venv for isolation
+python -m venv venv
+source venv/bin/activate # Linux/Mac
+venv\Scripts\activate    # Windows
+
+pip install -r requirements.txt
+```
+
+### Usage
+
+The main script allows you to train, evaluate and export the CNN model for Fashion-MNIST classification.
+
+#### Available Flags
+
+| Flag                  | Description                                                          |
+|-----------------------|----------------------------------------------------------------------|
+| `--log-level <LEVEL>` | Set logging verbosity (DEBUG, INFO, WARNING, ERROR). Default: `INFO` |
+| `--train-acc`         | Test model accuracy on training set                                  |
+| `--conf`              | Generate confusion matrix (saved to `conf_matrix/`)                  |
+| `--plot-training`     | Plot training curves (saved to `graphs/`).                           |
+| `--model-summary`     | Print model architecture summary                                     |
+| `--onnx`              | Export trained model to ONNX format                                  |
+
+#### Examples
+
+```bash
+# Train model and evaluate it on the test dataset
+python main.py
+
+# Run the main script only with warning logs or higher
+python main.py --log-level WARNING
+
+# Train the model, generate confusion matrix and training curves and export the model to ONNX.
+python main.py --conf --plot-training --onnx
+```
+
+### Repository Overview
+
+`main.py` - Main script for data loading, model training and evaluation  
+`src/augment.py` - Provides the possibility of data augmentation  
+`src/cnn.py` - CNN model architecture  
+`src/config.py` - Configuration parameters  
+`src/train.py` - Model training and train validation  
+`src/utils.py` - Helper functions  
+`src/validation.py` - Model evaluation
+
+## Future Improvements
+- implement Grad-CAM for model interpretability
+- explore model quantization for deployment
