@@ -1,4 +1,5 @@
 import logging
+import sys
 import matplotlib.pyplot as plt
 import torch
 from src.cnn import CNN
@@ -103,3 +104,28 @@ def export_onnx(model: CNN):
         input_names=['input'],
         output_names=['output']
     )
+
+
+def load_model(path: str) -> CNN:
+    """
+    Loads a model from the given path.
+    :param path: The path to the model.
+    :return: The loaded model.
+    """
+
+    logger = logging.getLogger()
+
+    device = get_device()
+    model = CNN().to(device)
+
+    try:
+        model.load_state_dict(torch.load(f"models/{path}", map_location=device))
+        model.eval()
+        logger.info("Successfully loaded model.")
+        return model
+    except FileNotFoundError:
+        logger.error(f"Model file not found: models/{path}.")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Unexpected error loading model: {e}.")
+        sys.exit(1)

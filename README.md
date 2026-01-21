@@ -33,6 +33,11 @@ While the footwear is classified with high confidence, shirts overlap with class
 
 ![Confusion Matrix](docs/confusion_matrix.png)
 
+## Grad-CAM Visualization
+
+To visualize what the CNN has learned, a Grad-CAM is implemented using the [`pytorch-grad-cam`](https://github.com/jacobgil/pytorch-grad-cam) library
+that follows [Selvaraju et al. (2019)](https://arxiv.org/pdf/1610.02391).
+
 ## Experiments
 
 | Nr | Model     | Augmentation                                                           | LR               | Epochs | Train Acc | Test Acc | Notes                                                             |
@@ -76,14 +81,20 @@ The main script allows you to train, evaluate and export the CNN model for Fashi
 
 #### Available Flags
 
-| Flag                  | Description                                                          |
-|-----------------------|----------------------------------------------------------------------|
-| `--log-level <LEVEL>` | Set logging verbosity (DEBUG, INFO, WARNING, ERROR). Default: `INFO` |
-| `--train-acc`         | Test model accuracy on training set                                  |
-| `--conf`              | Generate confusion matrix (saved to `conf_matrix/`)                  |
-| `--plot-training`     | Plot training curves (saved to `graphs/`).                           |
-| `--model-summary`     | Print model architecture summary                                     |
-| `--onnx`              | Export trained model to ONNX format                                  |
+| Flag                      | Description                                                          |
+|---------------------------|----------------------------------------------------------------------|
+| `--log-level <LEVEL>`     | Set logging verbosity (DEBUG, INFO, WARNING, ERROR). Default: `INFO` |
+| `--acc`                   | Test model accuracy on train and test set                            |
+| `--conf`                  | Generate confusion matrix (saved to `conf_matrix/`)                  |
+| `--plot-training`         | Plot training curves (saved to `graphs/`)                            |
+| `--model-summary`         | Print model architecture summary                                     |
+| `--onnx`                  | Export trained model to ONNX format                                  |
+| `--grad-cam`              | Generate Grad-CAM for the given class 0-9 (saved to `gradcam/`)      |
+| `--samples`               | The number of Grad-CAM samples to generate. Default: 10              |
+| `--aug-smooth`            | Reduces noise in the Grad-CAM through small changes of the images    |
+| `--eigen-smooth`          | Reduces noise in the Grad-CAM through eigenvector projection         |
+| `--save-model`            | Saves the trained model to `models/`                                 |
+| `--load-model <name.pth>` | Loads the given model instead of training a new one                  |
 
 #### Examples
 
@@ -104,10 +115,7 @@ python main.py --conf --plot-training --onnx
 `src/augment.py` - Provides the possibility of data augmentation  
 `src/cnn.py` - CNN model architecture  
 `src/config.py` - Configuration parameters  
+`gradcam.py` - Grad-CAM implementation  
 `src/train.py` - Model training and train validation  
 `src/utils.py` - Helper functions  
 `src/validation.py` - Model evaluation
-
-## Future Improvements
-- implement Grad-CAM for model interpretability
-- explore model quantization for deployment
