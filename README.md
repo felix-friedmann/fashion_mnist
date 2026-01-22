@@ -139,7 +139,8 @@ python main.py
 # Run the main script only with warning logs or higher
 python main.py --log-level WARNING
 
-# Train the model, generate confusion matrix and training curves and export the model to ONNX.
+# Train the model, generate confusion matrix and training curves
+# and export the model to ONNX.
 python main.py --conf --plot-training --onnx
 ```
 
