@@ -1,6 +1,8 @@
+import hashlib
 import logging
 import sys
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from src.cnn import CNN
 from src.config import *
@@ -131,3 +133,12 @@ def load_model(name: str) -> CNN:
     except Exception as e:
         logger.error(f"Unexpected error loading model: {e}.")
         sys.exit(1)
+
+
+def get_image_hash(image_array: np.ndarray) -> str:
+    """
+    Calculates the image hash.
+    :param image_array: The image.
+    :return: The hash of the image.
+    """
+    return hashlib.md5(image_array.tobytes()).hexdigest()[:8]

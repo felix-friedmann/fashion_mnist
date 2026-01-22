@@ -1,4 +1,3 @@
-import logging
 import os
 import numpy as np
 from torch import Tensor
@@ -35,19 +34,19 @@ def gradcam(model: CNN, input_tensor: Tensor, targets: list[ClassifierOutputTarg
         return visualization
 
 
-def save_gradcam_visualization(visualization, true_label: int, pred_label: int, output_dir: str, filename: str):
+def save_gradcam_visualization(visualization, output_dir: str, filename: str, aug: bool = False, eigen: bool = False):
     """
     Save the Grad-CAM visualization.
     :param visualization: Grad-CAM visualization.
-    :param true_label: True label.
-    :param pred_label: Predicted label.
     :param output_dir: Output directory.
     :param filename: Output filename.
+    :param aug: Aug smoothing active.
+    :param eigen: Eigen smoothing active.
     """
 
     plt.figure(figsize=(6, 6))
     plt.imshow(visualization)
-    plt.title(f'True: {CLASSES[true_label]}, Pred: {CLASSES[pred_label]}')
+    plt.title(f"Aug: {aug}, Eigen: {eigen}")
     plt.axis('off')
 
     plt.savefig(f"{output_dir}/{filename}", bbox_inches='tight', dpi=150)
@@ -108,14 +107,18 @@ def generate_gradcam(model: CNN, data_loader: DataLoader, target_classes: list[i
                 true_label = class_labels[idx].item()
                 pred_label = preds[idx].item()
 
+                image_np = image.cpu().numpy()
+                img_hash = get_image_hash(image_np)
+
                 targets = [ClassifierOutputTarget(target_class)]
                 visualization = gradcam(model, image, targets, aug_smooth, eigen_smooth)
 
                 output_dir_class = f"gradcam/{CLASSES[target_class]}"
                 os.makedirs(output_dir_class, exist_ok=True)
 
-                filename = f"gradcam_{CLASSES[target_class]}_{samples_found[target_class]}.png"
+                correct = "correct" if pred_label == true_label else "wrong"
+                filename = f"gradcam_{CLASSES[target_class]}_{img_hash}_{correct}.png"
 
-                save_gradcam_visualization(visualization, true_label, pred_label, output_dir_class, filename)
+                save_gradcam_visualization(visualization, output_dir_class, filename, aug_smooth, eigen_smooth)
 
                 samples_found[target_class] += 1

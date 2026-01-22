@@ -15,7 +15,7 @@ NUM_CLASSES: int = 10
 
 IN_CHANNELS: int = 1
 
-CLASSES: list[str] = ['T-shirt/top',
+CLASSES: list[str] = ['T-shirt_top',
                      'Trouser',
                      'Pullover',
                      'Dress',

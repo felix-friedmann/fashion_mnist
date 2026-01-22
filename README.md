@@ -33,10 +33,44 @@ While the footwear is classified with high confidence, shirts overlap with class
 
 ![Confusion Matrix](docs/confusion_matrix.png)
 
+| Class       | Test Acc | Train Acc |
+|-------------|----------|-----------|
+| T-shirt/Top | 84.90%   | 92.00%    |
+| Trouser     | 98.90%   | 99.82%    |
+| Pullover    | 87.70%   | 93.37%    |
+| Dress       | 94.10%   | 97.87%    |
+| Coat        | 90.60%   | 95.62%    |
+| Sandal      | 98.20%   | 99.83%    |
+| Shirt       | 79.70%   | 92.32%    |
+| Sneaker     | 98.00%   | 98.80%    |
+| Bag         | 98.30%   | 99.52%    |
+| Ankle boot  | 97.00%   | 98.93%    |
+
 ## Grad-CAM Visualization
 
 To visualize what the CNN has learned, a Grad-CAM is implemented using the [`pytorch-grad-cam`](https://github.com/jacobgil/pytorch-grad-cam) library
-that follows [Selvaraju et al. (2019)](https://arxiv.org/pdf/1610.02391).
+that follows [Selvaraju et al. (2019)](https://arxiv.org/pdf/1610.02391). As advised by most of the literature, the last convolutional layer is chosen as
+the target layer or in this case the batch norm of conversion layer 3.
+
+![T-shirt/Top Grad-CAM](docs/gradcam/tshirt_top_gradcam.png)
+
+![Trouser Grad-CAM](docs/gradcam/trouser_gradcam.png)
+
+![Pullover Grad-CAM](docs/gradcam/pullover_gradcam.png)
+
+![Dress Grad-CAM](docs/gradcam/dress_gradcam.png)
+
+![Coat Grad-CAM](docs/gradcam/coat_gradcam.png)
+
+![Sandal Grad-CAM](docs/gradcam/sandal_gradcam.png)
+
+![Shirt Grad-CAM](docs/gradcam/shirt_gradcam.png)
+
+![Sneaker Grad-CAM](docs/gradcam/sneaker_gradcam.png)
+
+![Bag Grad-CAM](docs/gradcam/bag_gradcam.png)
+
+![Ankle boot Grad-CAM](docs/gradcam/ankleboot_gradcam.png)
 
 ## Experiments
 
