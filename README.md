@@ -140,8 +140,15 @@ python main.py
 python main.py --log-level WARNING
 
 # Train the model, generate confusion matrix and training curves
-# and export the model to ONNX.
+# and export the model to ONNX
 python main.py --conf --plot-training --onnx
+
+# Load a beforehand saved model and calculate model accuracy
+python main.py --load-model model --acc
+
+# Load a model and generate 5 Grad-CAM images for the classes
+# pullover and bag with aug smoothing
+python main.py --load-model model --grad-cam 2 8 --samples 5 --aug-smooth
 ```
 
 ### Repository Overview
