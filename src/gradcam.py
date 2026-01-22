@@ -1,3 +1,4 @@
+import logging
 import os
 import numpy as np
 from torch import Tensor
@@ -53,57 +54,68 @@ def save_gradcam_visualization(visualization, true_label: int, pred_label: int, 
     plt.close()
 
 
-def generate_gradcam(model: CNN, data_loader: DataLoader, target_class: int, num_samples: int, aug_smooth: bool, eigen_smooth: bool):
+def generate_gradcam(model: CNN, data_loader: DataLoader, target_classes: list[int], num_samples: int, aug_smooth: bool, eigen_smooth: bool):
     """
     Generate Grad-CAM visualization.
     :param model: CNN model.
     :param data_loader: The image data.
-    :param target_class: Target class.
+    :param target_classes: Target classes.
     :param num_samples: Number of samples.
     :param aug_smooth: Whether to apply aug smoothing.
     :param eigen_smooth: Whether to apply eigen smoothing.
     """
 
-    output_dir = "gradcam"
-    os.makedirs(output_dir, exist_ok=True)
+    logger = logging.getLogger()
+    for target in target_classes:
+        if target < 0 or target >= len(CLASSES):
+            logger.error(f"Target class {target} does not exist. Skipping non existing class {target}.")
+            continue
 
     model.eval()
     device = get_device()
 
-    samples_found = 0
+    samples_found = {cls: 0 for cls in target_classes}
 
     for data, target in data_loader:
-        # mask is tensor of bool -> all True where target == target_class
-        mask = target == target_class
-
-        if not mask.any():
-            continue
-
-        # current batch
-        class_images = data[mask].to(device)
-        class_labels = target[mask]
-
-        output = model(class_images)
-        preds = output.argmax(dim=1)
-
-        for idx in range(class_images.shape[0]):
-            if samples_found >= num_samples:
-                break
-
-            # slice to keep batch dimension!?
-            image = class_images[idx:idx+1]
-            true_label = class_labels[idx].item()
-            pred_label = preds[idx].item()
-
-            targets = [ClassifierOutputTarget(target_class)]
-            visualization = gradcam(model, image, targets, aug_smooth, eigen_smooth)
-
-            correct = "correct" if pred_label == true_label else "incorrect"
-            filename = f"gradcam_{CLASSES[target_class]}_{samples_found}_{correct}.png"
-
-            save_gradcam_visualization(visualization, true_label, pred_label, output_dir, filename)
-
-            samples_found += 1
-
-        if samples_found >= num_samples:
+        # break if all classes have num_samples examples
+        if all(count >= num_samples for count in samples_found.values()):
             break
+
+        for target_class in target_classes:
+            # jump to next class
+            if samples_found[target_class] >= num_samples:
+                continue
+
+            # mask is tensor of bool -> all True where target == target_class
+            mask = target == target_class
+
+            if not mask.any():
+                continue
+
+            # current batch
+            class_images = data[mask].to(device)
+            class_labels = target[mask]
+
+            output = model(class_images)
+            preds = output.argmax(dim=1)
+
+            for idx in range(class_images.shape[0]):
+                if samples_found[target_class] >= num_samples:
+                    break
+
+                # slice to keep batch dimension!?
+                image = class_images[idx:idx+1]
+                true_label = class_labels[idx].item()
+                pred_label = preds[idx].item()
+
+                targets = [ClassifierOutputTarget(target_class)]
+                visualization = gradcam(model, image, targets, aug_smooth, eigen_smooth)
+
+                output_dir_class = f"gradcam/{CLASSES[target_class]}"
+                os.makedirs(output_dir_class, exist_ok=True)
+
+                filename = f"gradcam_{CLASSES[target_class]}_{samples_found[target_class]}.png"
+
+                save_gradcam_visualization(visualization, true_label, pred_label, output_dir_class, filename)
+
+                samples_found[target_class] += 1

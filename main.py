@@ -19,7 +19,7 @@ def main():
     parser.add_argument('--plot-training', action='store_true', help='Plots training data.')
     parser.add_argument('--model-summary', action='store_true', help='Prints model summary.')
     parser.add_argument('--onnx', action='store_true', help='Exports onnx model.')
-    parser.add_argument('--grad-cam', type=int, default=None, help='Generates Grad-CAM heatmap for given class.')
+    parser.add_argument('--grad-cam', type=int, nargs='+', default=None, help='Generates Grad-CAM heatmap for given classes.')
     parser.add_argument('--samples', type=int, default=10, help='Number of Grad-CAM samples to generate.')
     parser.add_argument('--aug-smooth', action='store_true', help='Only valid with --grad-cam.')
     parser.add_argument('--eigen-smooth', action='store_true', help='Only valid with --grad-cam.')
@@ -64,7 +64,7 @@ def main():
     # Grad-CAM
     if args.grad_cam is not None:
         logger.info("Plotting Grad-CAM...")
-        generate_gradcam(model, test_loader, target_class=args.grad_cam, num_samples=args.samples, aug_smooth=args.aug_smooth, eigen_smooth=args.eigen_smooth)
+        generate_gradcam(model, test_loader, target_classes=args.grad_cam, num_samples=args.samples, aug_smooth=args.aug_smooth, eigen_smooth=args.eigen_smooth)
 
     # evaluate model
     if args.acc:
