@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--samples', type=int, default=10, help='Number of Grad-CAM samples to generate.')
     parser.add_argument('--aug-smooth', action='store_true', help='Only valid with --grad-cam.')
     parser.add_argument('--eigen-smooth', action='store_true', help='Only valid with --grad-cam.')
-    parser.add_argument('--save-model', action='store_true', help='Saves trained model.')
+    parser.add_argument('--save-model', type=str, default=None, help='Saves trained model.')
     parser.add_argument('--load-model', type=str, default=None, help='Loads the given model.')
     args = parser.parse_args()
 
@@ -56,9 +56,10 @@ def main():
         logger.info("Training model...")
         train_model(model, train_loader, test_loader, device, args.plot_training)
 
-        if args.save_model:
+        if args.save_model is not None:
             os.makedirs("models", exist_ok=True)
-            torch.save(model.state_dict(), f"models/model_{TIME}.pth")
+            filename = args.save_model if args.save_model.endswith(".pth") else args.save_model + ".pth"
+            torch.save(model.state_dict(), f"models/{filename}")
 
     # Grad-CAM
     if args.grad_cam is not None:

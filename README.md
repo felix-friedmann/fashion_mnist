@@ -81,20 +81,20 @@ The main script allows you to train, evaluate and export the CNN model for Fashi
 
 #### Available Flags
 
-| Flag                      | Description                                                          |
-|---------------------------|----------------------------------------------------------------------|
-| `--log-level <LEVEL>`     | Set logging verbosity (DEBUG, INFO, WARNING, ERROR). Default: `INFO` |
-| `--acc`                   | Test model accuracy on train and test set                            |
-| `--conf`                  | Generate confusion matrix (saved to `conf_matrix/`)                  |
-| `--plot-training`         | Plot training curves (saved to `graphs/`)                            |
-| `--model-summary`         | Print model architecture summary                                     |
-| `--onnx`                  | Export trained model to ONNX format                                  |
-| `--grad-cam`              | Generate Grad-CAM for the given class 0-9 (saved to `gradcam/`)      |
-| `--samples`               | The number of Grad-CAM samples to generate. Default: 10              |
-| `--aug-smooth`            | Reduces noise in the Grad-CAM through small changes of the images    |
-| `--eigen-smooth`          | Reduces noise in the Grad-CAM through eigenvector projection         |
-| `--save-model`            | Saves the trained model to `models/`                                 |
-| `--load-model <name.pth>` | Loads the given model instead of training a new one                  |
+| Flag                  | Description                                                          |
+|-----------------------|----------------------------------------------------------------------|
+| `--log-level <LEVEL>` | Set logging verbosity (DEBUG, INFO, WARNING, ERROR). Default: `INFO` |
+| `--acc`               | Test model accuracy on train and test set                            |
+| `--conf`              | Generate confusion matrix (saved to `conf_matrix/`)                  |
+| `--plot-training`     | Plot training curves (saved to `graphs/`)                            |
+| `--model-summary`     | Print model architecture summary                                     |
+| `--onnx`              | Export trained model to ONNX format                                  |
+| `--grad-cam`          | Generate Grad-CAM for the given class 0-9 (saved to `gradcam/`)      |
+| `--samples`           | The number of Grad-CAM samples to generate. Default: 10              |
+| `--aug-smooth`        | Reduces noise in the Grad-CAM through small changes of the images    |
+| `--eigen-smooth`      | Reduces noise in the Grad-CAM through eigenvector projection         |
+| `--save-model <name>` | Saves the trained model to `models/<name>.pth`                       |
+| `--load-model <name>` | Loads model from `models/<name>.pth` instead of training a new one   |
 
 #### Examples
 

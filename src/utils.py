@@ -99,17 +99,17 @@ def export_onnx(model: CNN):
     torch.onnx.export(
         model,
         dummy_input,
-        "model.onnx",
+        f"model_{TIME}.onnx",
         export_params=True,
         input_names=['input'],
         output_names=['output']
     )
 
 
-def load_model(path: str) -> CNN:
+def load_model(name: str) -> CNN:
     """
     Loads a model from the given path.
-    :param path: The path to the model.
+    :param name: The name of the model.
     :return: The loaded model.
     """
 
@@ -118,13 +118,15 @@ def load_model(path: str) -> CNN:
     device = get_device()
     model = CNN().to(device)
 
+    filename = name if name.endswith(".pth") else name + ".pth"
+
     try:
-        model.load_state_dict(torch.load(f"models/{path}", map_location=device))
+        model.load_state_dict(torch.load(f"models/{filename}", map_location=device))
         model.eval()
         logger.info("Successfully loaded model.")
         return model
     except FileNotFoundError:
-        logger.error(f"Model file not found: models/{path}.")
+        logger.error(f"Model file not found: models/{filename}.")
         sys.exit(1)
     except Exception as e:
         logger.error(f"Unexpected error loading model: {e}.")
