@@ -1,16 +1,30 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
-![WIP](https://img.shields.io/badge/status-WIP-orange)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.8+-red.svg)](https://pytorch.org/)
 
 # Fashion MNIST Image Recognition
 
-Deep learning image classifier for the Fashion-MNIST dataset. Achieved model improvement from 84.23% to 92.74% test accuracy through 
-regularization techniques and architecture improvements.
+Deep learning image classifier for the Fashion-MNIST dataset. Achieved model improvement from 84.23% to 92.74% test accuracy through
+regularization techniques, learning rate scheduling and architecture improvements.
 
 ## Data
 
 Fashion-Mnist dataset, 60.000 training images, 10.000 test images with 10 classes. Each image is a 28x28 grayscale image, for more information see 
 the [fashion-mnist repository](https://github.com/zalandoresearch/fashion-mnist) of Zalando research.
+
+## Key Results
+
+**Final Accuracy:** 92.74% test accuracy (96.81% train)  
+**Improvement:** 8.51 percentage points over baseline (84.23%)  
+**Best Classes:** Footwear (97-98%), Bags (98.3%)  
+**Worst Classes:** Shirts (79.7%) due to visual overlap with other classes with similar features
+
+| Class     | T-shirt/Top | Trouser | Pullover | Dress   | Coat   | Sandal | Shirt  | Sneaker | Bag    | Ankle boot |
+|-----------|-------------|---------|----------|---------|--------|--------|--------|---------|--------|------------|
+| Test Acc  | 84.90%      | 98.90%  | 87.70%   | 94.10%  | 90.60% | 98.20% | 79.70% | 98.00%  | 98.30% | 97.00%     |
+| Train Acc | 92.00%      | 99.82%  | 93.37%   | 97.87%  | 95.62% | 99.83% | 92.32% | 98.80%  | 99.52% | 98.93%     |
+
+![Confusion Matrix](docs/confusion_matrix.png)
 
 ## Architecture
 
@@ -23,34 +37,29 @@ It is a 3-layer CNN with 1 -> 32, 32 -> 64 and 64 -> 128 channels and each one w
 number of output channels, activated through Relu and pooled by 2x2 max pooling. After reshaping follow two fully connected layers with 1152 -> 512 -> 10.
 The first to convolutional layers have a dropout rate of 0.1, the third of 0.15 and the first fully connected layer of 0.3. The model trains with a batch
 size of 64, 30 epochs and a starter learning rate of 0.001 with a ReduceLROnPlateau scheduler. The criterion is a CrossEntropyLoss while the optimizer is 
-stochastic gradient descent with weight decay.
+Stochastic Gradient Descent with weight decay.
 
 The final model tends to overfit lightly in the last epochs though the difference in loss stays within 0.0695:
 
 ![Training Curves](docs/training_curves.png)
 
-While the footwear is classified with high confidence, shirts overlap with classes that contain similar features:
-
-![Confusion Matrix](docs/confusion_matrix.png)
-
-| Class       | Test Acc | Train Acc |
-|-------------|----------|-----------|
-| T-shirt/Top | 84.90%   | 92.00%    |
-| Trouser     | 98.90%   | 99.82%    |
-| Pullover    | 87.70%   | 93.37%    |
-| Dress       | 94.10%   | 97.87%    |
-| Coat        | 90.60%   | 95.62%    |
-| Sandal      | 98.20%   | 99.83%    |
-| Shirt       | 79.70%   | 92.32%    |
-| Sneaker     | 98.00%   | 98.80%    |
-| Bag         | 98.30%   | 99.52%    |
-| Ankle boot  | 97.00%   | 98.93%    |
-
 ## Grad-CAM Visualization
 
 To visualize what the CNN has learned, a Grad-CAM is implemented using the [`pytorch-grad-cam`](https://github.com/jacobgil/pytorch-grad-cam) library
 that follows [Selvaraju et al. (2019)](https://arxiv.org/pdf/1610.02391). As advised by most of the literature, the last convolutional layer is chosen as
-the target layer or in this case the batch norm of conversion layer 3.
+the target layer, in this case the batch norm of conversion layer 3.
+
+**Observations:**
+- Upper body: More distributed patterns (explains confusion between classes)
+- Trousers: Attention to vertical structure
+- Footwear: Model focuses on silhouette, sole and ankle collar
+- Bags: Focus on bag opening
+
+The four columns show Grad-CAM with different augmentation settings for one example of each class:
+- Aug: False, Eigen: False (raw)
+- Aug: True, Eigen: False (with augmentation smoothing)
+- Aug: False, Eigen: True (with eigenvector smoothing)
+- Aug: True, Eigen: True (both smoothing techniques)
 
 ![T-shirt/Top Grad-CAM](docs/gradcam/tshirt_top_gradcam.png)
 
@@ -73,6 +82,16 @@ the target layer or in this case the batch norm of conversion layer 3.
 ![Ankle boot Grad-CAM](docs/gradcam/ankleboot_gradcam.png)
 
 ## Experiments
+
+**What worked:**
+- Batch Normalization (Exp. 12): Big jump in accuracy but introduced overfitting
+- Dropout tuning (Exp. 13-16): Reduced overfitting while maintaining the accuracy
+- Batch size 64: Best balance
+
+**What didn't work:**
+- Data augmentation (Exp. 2): Dataset too clean/standardized
+- Batch size 128 (Exp. 8): Underfitting
+- Batch size 32 (Exp. 15): Overfitting
 
 | Nr | Model     | Augmentation                                                           | LR               | Epochs | Train Acc | Test Acc | Notes                                                             |
 |----|-----------|------------------------------------------------------------------------|------------------|--------|-----------|----------|-------------------------------------------------------------------|
